@@ -1,0 +1,44 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <DHT.h>
+
+// Konfigurasi DHT11
+#define DHTPIN D1      // Pin DHT11 dihubungkan
+#define DHTTYPE DHT11  // Jenis sensor DHT yang digunakan
+// Inisialisasi LCD I2C (alamat dan ukuran)
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+// Inisialisasi sensor DHT
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  // Inisialisasi LCD
+  lcd.init();  // Inisialisasi LCD
+  lcd.backlight();  // Mengaktifkan lampu latar LCD
+
+  // Inisialisasi sensor DHT
+  dht.begin();
+}
+void loop() {
+  // Membaca suhu dan kelembaban
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();  // Suhu dalam derajat Celsius
+  // Jika terjadi kesalahan pembacaan
+  if (isnan(humidity) || isnan(temperature)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Error: can't read ");
+    lcd.setCursor(0, 1);
+    lcd.print("sensor DHT11");
+  } else {
+    // Tampilkan suhu dan kelembaban di LCD
+    lcd.clear();  // Membersihkan tampilan LCD
+    lcd.setCursor(0, 0);  // Posisi baris pertama, kolom pertama
+    lcd.print("Suhu: ");
+    lcd.print(temperature);
+    lcd.print(" °C");
+    lcd.setCursor(0, 1);  // Posisi baris kedua, kolom pertama
+    lcd.print("Kelembaban: ");
+    lcd.print(humidity);
+    lcd.print(" %");
+  }
+  delay(2000);  // Jeda 2 detik sebelum pembacaan berikutnya
+}
